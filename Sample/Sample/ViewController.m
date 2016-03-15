@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "WGURLSession.h"
+#import "AFNetworking.h"
 
 @interface ViewController ()
 
@@ -24,7 +25,23 @@
     WGURLRequestContext *requestContext = [WGURLRequestContext createWithURL:url];
     WGURLSession.requestContext(requestContext).editRequest(^(NSMutableURLRequest *request){
         request.cachePolicy = NSURLRequestReturnCacheDataDontLoad;
-    }).domainResolution(resolution).get([AFHTTPSessionManager manager], ^(NSHTTPURLResponse *response, id responseObject, NSError *error){
+    }).domainResolution(resolution).get(^(NSHTTPURLResponse *response, id responseObject, NSError *error){
+        if (error) {
+            NSLog(@"%@", error);
+        } else {
+            NSLog(@"%@", responseObject);
+        }
+    });
+    
+    WGURLSession.requestContext(requestContext).get(^(NSHTTPURLResponse *respnse, id responseObject, NSError *error){
+        if (error) {
+            NSLog(@"%@", error);
+        } else {
+            NSLog(@"%@", responseObject);
+        }
+    });
+    
+    WGURLSession.requestContext(requestContext).sessionManager([AFHTTPSessionManager manager]).get(^(NSHTTPURLResponse *respnse, id responseObject, NSError *error){
         if (error) {
             NSLog(@"%@", error);
         } else {
@@ -33,7 +50,7 @@
     });
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    WGURLSession.request(request).get([AFHTTPSessionManager manager], ^(NSHTTPURLResponse *response, id responseObject, NSError *error){
+    WGURLSession.request(request).get(^(NSHTTPURLResponse *response, id responseObject, NSError *error){
         if (error) {
             NSLog(@"%@", error);
         } else {
