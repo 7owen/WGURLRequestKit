@@ -9,6 +9,8 @@
 #import "WGURLSession.h"
 #import "AFNetworking.h"
 
+static AFHTTPSessionManager *_defaultManager = nil;
+
 @interface WGURLSession ()
 
 @property (nonatomic, strong) WGURLRequestContext *requestContext;
@@ -19,6 +21,10 @@
 @end
 
 @implementation WGURLSession
+
++ (void)setDefaultHTTPSessionManager:(AFHTTPSessionManager *)manager {
+    _defaultManager = manager;
+}
 
 + (WGURLSession * (^)(WGURLRequestContext *requestContext))requestContext {
     return ^(WGURLRequestContext *requestContext){
@@ -80,7 +86,10 @@
         if (request) {
             AFHTTPSessionManager *manager = self.manager;
             if (!manager) {
-                manager = [AFHTTPSessionManager manager];
+                manager = _defaultManager;
+                if (!manager) {
+                    manager = [AFHTTPSessionManager manager];
+                }
             }
             NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;

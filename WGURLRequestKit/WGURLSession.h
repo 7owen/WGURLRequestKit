@@ -24,6 +24,7 @@ typedef void (^WGURLSessionCompletionHandler)(NSHTTPURLResponse *response, id re
 
 @interface WGURLSession : NSObject
 
++ (void)setDefaultHTTPSessionManager:(AFHTTPSessionManager *)manager;
 + (WGURLSession * (^)(WGURLRequestContext *requestContext))requestContext;
 + (WGURLSession * (^)(NSURLRequest *request))request;
 
