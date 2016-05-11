@@ -10,6 +10,11 @@
 
 @implementation WGServerInfo
 
+- (id)initWithServerName:(NSString*)serverName aURL:(NSString*)aURL {
+    NSURL *url = [NSURL URLWithString:aURL];
+    return [self initWithServerName:serverName scheme:url.scheme host:url.host port:url.port basePath:url.path];
+}
+
 - (id)initWithServerName:(NSString*)serverName scheme:(NSString*)scheme host:(NSString *)host port:(NSNumber *)port basePath:(NSString *)basePath {
     self = [super init];
     if (self) {

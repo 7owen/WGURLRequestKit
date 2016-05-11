@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSNumber *port;
 @property (nonatomic, strong) NSString *basePath;
 
+- (id)initWithServerName:(NSString*)serverName aURL:(NSString*)aURL;
 - (id)initWithServerName:(NSString*)serverName scheme:(NSString*)scheme host:(NSString *)host port:(NSNumber *)port basePath:(NSString *)basePath;
 
 @end
