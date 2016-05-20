@@ -10,6 +10,8 @@
 #import "AFNetworking.h"
 
 static AFHTTPSessionManager *_defaultManager = nil;
+static WGURLSessionErrorPreHandler _defaultErrorHandlerBlock = nil;
+static WGURLSessionResponsePreHandler _defaultResponseHandlerBlock = nil;
 
 @interface WGURLSession ()
 
@@ -17,6 +19,8 @@ static AFHTTPSessionManager *_defaultManager = nil;
 @property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic, strong) AFHTTPSessionManager *manager;
 @property (nonatomic, strong) id<WGURLSessionDomainResolution> _domainResolution;
+@property (nonatomic, copy) WGURLSessionErrorPreHandler errorHandlerBlock;
+@property (nonatomic, copy) WGURLSessionResponsePreHandler responseHandlerBlock;
 
 @end
 
@@ -24,6 +28,14 @@ static AFHTTPSessionManager *_defaultManager = nil;
 
 + (void)setDefaultHTTPSessionManager:(AFHTTPSessionManager *)manager {
     _defaultManager = manager;
+}
+
++ (void)setDefaultErrorPreHandler:(WGURLSessionErrorPreHandler)handler {
+    _defaultErrorHandlerBlock = handler;
+}
+
++ (void)setDefaultResponsePreHandler:(WGURLSessionResponsePreHandler)handler {
+    _defaultResponseHandlerBlock = handler;
 }
 
 + (WGURLSession * (^)(WGURLRequestContext *requestContext))requestContext {
@@ -65,6 +77,20 @@ static AFHTTPSessionManager *_defaultManager = nil;
     };
 }
 
+- (WGURLSession * (^)(WGURLSessionErrorPreHandler errorHandlerBlock))errorPreHandler {
+    return ^(WGURLSessionErrorPreHandler errorHandlerBlock) {
+        self.errorHandlerBlock = errorHandlerBlock;
+        return self;
+    };
+}
+
+- (WGURLSession * (^)(WGURLSessionResponsePreHandler responseHandlerBlock))responsePreHandler {
+    return ^(WGURLSessionResponsePreHandler responseHandlerBlock) {
+        self.responseHandlerBlock = responseHandlerBlock;
+        return self;
+    };
+}
+
 - (WGURLSession * (^)(WGURLSessionCompletionHandler completionHandler))get {
     return ^(WGURLSessionCompletionHandler completionHandler){
         if (__domainResolution) {
@@ -94,12 +120,24 @@ static AFHTTPSessionManager *_defaultManager = nil;
             NSURLSessionDataTask *task = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
                 if (!error) {
-                    NSLog(@"Response: %@", responseObject);
+                    WGURLSessionResponsePreHandler responseHandlerBlock = _responseHandlerBlock;
+                    if (!responseHandlerBlock) {
+                        responseHandlerBlock = _defaultResponseHandlerBlock;
+                    }
+                    if (responseHandlerBlock) {
+                        responseObject = responseHandlerBlock(responseObject, error);
+                    }
                     if (completionHandler) {
                         completionHandler(httpResponse, responseObject, nil);
                     }
                 } else {
-                    NSLog(@"Response code: %ld,error:%@ responseData:%@", (long)httpResponse.statusCode,error, responseObject);
+                    WGURLSessionErrorPreHandler errorHandlerBlock = _errorHandlerBlock;
+                    if (!errorHandlerBlock) {
+                        errorHandlerBlock = _defaultErrorHandlerBlock;
+                    }
+                    if (errorHandlerBlock) {
+                        error = errorHandlerBlock(responseObject, error);
+                    }
                     if (completionHandler) {
                         completionHandler(httpResponse, responseObject, error);
                     }

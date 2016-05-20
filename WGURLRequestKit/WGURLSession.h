@@ -13,6 +13,8 @@
 
 typedef void (^WGURLSessionEditRequest)(NSMutableURLRequest *request);
 typedef void (^WGURLSessionCompletionHandler)(NSHTTPURLResponse *response, id responseObject, NSError *error);
+typedef NSError*(^WGURLSessionErrorPreHandler)(id responseObject, NSError *error);
+typedef id(^WGURLSessionResponsePreHandler)(id responseObject, NSError *error);
 
 @protocol WGURLSessionDomainResolution <NSObject>
 
@@ -25,12 +27,17 @@ typedef void (^WGURLSessionCompletionHandler)(NSHTTPURLResponse *response, id re
 @interface WGURLSession : NSObject
 
 + (void)setDefaultHTTPSessionManager:(AFHTTPSessionManager *)manager;
++ (void)setDefaultErrorPreHandler:(WGURLSessionErrorPreHandler)handler;
++ (void)setDefaultResponsePreHandler:(WGURLSessionResponsePreHandler)handler;
+
 + (WGURLSession * (^)(WGURLRequestContext *requestContext))requestContext;
 + (WGURLSession * (^)(NSURLRequest *request))request;
 
 - (WGURLSession * (^)(id<WGURLSessionDomainResolution> domainResolution))domainResolution;
 - (WGURLSession * (^)(WGURLSessionEditRequest requestBlock))editRequest;
 - (WGURLSession * (^)(AFHTTPSessionManager *manager))sessionManager;
+- (WGURLSession * (^)(WGURLSessionErrorPreHandler errorHandlerBlock))errorPreHandler;
+- (WGURLSession * (^)(WGURLSessionResponsePreHandler responseHandlerBlock))responsePreHandler;
 - (WGURLSession * (^)(WGURLSessionCompletionHandler completionHandler))get;
 
 @end
