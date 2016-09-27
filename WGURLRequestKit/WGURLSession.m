@@ -125,7 +125,7 @@ static WGURLSessionResponsePreHandler _defaultResponseHandlerBlock = nil;
                         responseHandlerBlock = _defaultResponseHandlerBlock;
                     }
                     if (responseHandlerBlock) {
-                        responseObject = responseHandlerBlock(responseObject, error);
+                        responseObject = responseHandlerBlock(response, responseObject, error);
                     }
                     if (completionHandler) {
                         completionHandler(httpResponse, responseObject, nil);
@@ -136,7 +136,7 @@ static WGURLSessionResponsePreHandler _defaultResponseHandlerBlock = nil;
                         errorHandlerBlock = _defaultErrorHandlerBlock;
                     }
                     if (errorHandlerBlock) {
-                        error = errorHandlerBlock(responseObject, error);
+                        error = errorHandlerBlock(response, responseObject, error);
                     }
                     if (completionHandler) {
                         completionHandler(httpResponse, responseObject, error);

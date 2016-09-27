@@ -11,10 +11,10 @@
 
 @class AFHTTPSessionManager;
 
-typedef void (^WGURLSessionEditRequest)(NSMutableURLRequest *request);
-typedef void (^WGURLSessionCompletionHandler)(NSHTTPURLResponse *response, id responseObject, NSError *error);
-typedef NSError*(^WGURLSessionErrorPreHandler)(id responseObject, NSError *error);
-typedef id(^WGURLSessionResponsePreHandler)(id responseObject, NSError *error);
+typedef void (^WGURLSessionEditRequest)(NSMutableURLRequest *);
+typedef void (^WGURLSessionCompletionHandler)(__kindof NSURLResponse *, id , NSError *);
+typedef NSError*(^WGURLSessionErrorPreHandler)(__kindof NSURLResponse *, id , NSError *);
+typedef id(^WGURLSessionResponsePreHandler)(__kindof NSURLResponse *, id , NSError *);
 
 @protocol WGURLSessionDomainResolution <NSObject>
 
