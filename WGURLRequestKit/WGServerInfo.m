@@ -51,4 +51,13 @@
     return self;
 }
 
+- (NSURL*)generateURL {
+    NSURLComponents *components = [NSURLComponents new];
+    components.scheme = _scheme;
+    components.host = _host;
+    components.port = _port;
+    components.path = _basePath;
+    return [components URL];
+}
+
 @end
